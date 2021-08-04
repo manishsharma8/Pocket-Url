@@ -1,0 +1,6 @@
+query getUrl($shortUrl: String!) {
+	getUrl(shortUrl: $shortUrl) {
+		id
+		longUrl
+	}
+}

@@ -1,0 +1,7 @@
+query Urls {
+	Urls {
+		id
+		longUrl
+		shortUrl
+	}
+}

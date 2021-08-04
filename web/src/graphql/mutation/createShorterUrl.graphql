@@ -1,0 +1,9 @@
+mutation createShorterUrl($longUrl: String!) {
+	createShorterUrl(longUrl: $longUrl) {
+		id
+		longUrl
+		shortUrl
+		createdAt
+		updatedAt
+	}
+}

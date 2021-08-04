@@ -1,0 +1,9 @@
+mutation signup($options: UserFieldInput!) {
+	signup(options: $options) {
+		user {
+			id
+			username
+			email
+		}
+	}
+}
