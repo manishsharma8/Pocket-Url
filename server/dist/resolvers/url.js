@@ -16,6 +16,7 @@ exports.UrlResolver = void 0;
 const Url_1 = require("../entities/Url");
 const type_graphql_1 = require("type-graphql");
 const nanoid_1 = require("nanoid");
+const isAuth_1 = require("../middleware/isAuth");
 let UrlResolver = class UrlResolver {
     async Urls() {
         return Url_1.Url.find({
@@ -24,15 +25,25 @@ let UrlResolver = class UrlResolver {
             },
         });
     }
+    async getUserUrls({ req }) {
+        return Url_1.Url.find({
+            where: {
+                creatorId: req.session.userId,
+            },
+            order: {
+                createdAt: 'DESC',
+            },
+        });
+    }
     async getUrl(shortUrl) {
         return Url_1.Url.findOne({ where: { shortUrl } });
     }
-    async createShorterUrl(longUrl) {
+    async createShorterUrl(longUrl, { req }) {
         const shortUrl = nanoid_1.nanoid(7);
-        console.log(shortUrl);
         return Url_1.Url.create({
             longUrl,
             shortUrl,
+            creatorId: req.session.userId,
         }).save();
     }
 };
@@ -43,6 +54,13 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UrlResolver.prototype, "Urls", null);
 __decorate([
+    type_graphql_1.Query(() => [Url_1.Url], { nullable: true }),
+    __param(0, type_graphql_1.Ctx()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], UrlResolver.prototype, "getUserUrls", null);
+__decorate([
     type_graphql_1.Query(() => Url_1.Url, { nullable: true }),
     __param(0, type_graphql_1.Arg('shortUrl')),
     __metadata("design:type", Function),
@@ -50,10 +68,12 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UrlResolver.prototype, "getUrl", null);
 __decorate([
+    type_graphql_1.UseMiddleware(isAuth_1.isAuth),
     type_graphql_1.Mutation(() => Url_1.Url),
     __param(0, type_graphql_1.Arg('longUrl')),
+    __param(1, type_graphql_1.Ctx()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
 ], UrlResolver.prototype, "createShorterUrl", null);
 UrlResolver = __decorate([

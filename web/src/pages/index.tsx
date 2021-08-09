@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Formik, Form, Field, useField } from 'formik';
-import { useCreateShorterUrlMutation } from '../generated/graphql';
+import { useCreateShorterUrlMutation, useMeQuery } from '../generated/graphql';
 import * as Yup from 'yup';
 import Layout from '../components/Layout';
 import { useRouter } from 'next/router';
+import { isServer } from '../utils/isServer';
 
 const UrlSchema = Yup.object().shape({
 	longUrl: Yup.string().url('Invalid Url').required('Required'),
@@ -12,10 +13,16 @@ const UrlSchema = Yup.object().shape({
 const App = (props: any) => {
 	const router = useRouter();
 	const [dwarfUrl, setDwarfUrl] = useState<string | null>(null);
-	const [token, setToken] = useState<string | null>(null);
 	const [, createUrl] = useCreateShorterUrlMutation();
+	const [{ data, fetching }] = useMeQuery({ pause: isServer() });
 
 	let fieldOnSubmit: any;
+
+	useEffect(() => {
+		if (data?.me) {
+			router.push(`/v1/${data.me.id}`);
+		}
+	}, [data, router]);
 
 	if (dwarfUrl) {
 		fieldOnSubmit = (
@@ -148,7 +155,6 @@ const App = (props: any) => {
 									setDwarfUrl(
 										`http://localhost:3000/${response.data?.createShorterUrl.shortUrl}`
 									);
-									setToken(response.data?.createShorterUrl.shortUrl);
 								}
 							}}
 						>

@@ -48,8 +48,10 @@ export type Query = {
   __typename?: 'Query';
   hello: Scalars['String'];
   Urls?: Maybe<Array<Url>>;
+  getUserUrls?: Maybe<Array<Url>>;
   getUrl?: Maybe<Url>;
   me?: Maybe<User>;
+  allUser?: Maybe<Array<User>>;
 };
 
 
@@ -62,13 +64,14 @@ export type Url = {
   id: Scalars['Float'];
   longUrl: Scalars['String'];
   shortUrl: Scalars['String'];
+  creatorId: Scalars['String'];
   createdAt: Scalars['String'];
   updatedAt: Scalars['String'];
 };
 
 export type User = {
   __typename?: 'User';
-  id: Scalars['Float'];
+  id: Scalars['String'];
   username: Scalars['String'];
   email: Scalars['String'];
   createdAt: Scalars['String'];
@@ -152,6 +155,17 @@ export type GetUrlQuery = (
     { __typename?: 'Url' }
     & Pick<Url, 'id' | 'longUrl'>
   )> }
+);
+
+export type GetUserUrlsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetUserUrlsQuery = (
+  { __typename?: 'Query' }
+  & { getUserUrls?: Maybe<Array<(
+    { __typename?: 'Url' }
+    & Pick<Url, 'id' | 'longUrl' | 'shortUrl' | 'createdAt'>
+  )>> }
 );
 
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
@@ -242,6 +256,20 @@ export const GetUrlDocument = gql`
 
 export function useGetUrlQuery(options: Omit<Urql.UseQueryArgs<GetUrlQueryVariables>, 'query'> = {}) {
   return Urql.useQuery<GetUrlQuery>({ query: GetUrlDocument, ...options });
+};
+export const GetUserUrlsDocument = gql`
+    query getUserUrls {
+  getUserUrls {
+    id
+    longUrl
+    shortUrl
+    createdAt
+  }
+}
+    `;
+
+export function useGetUserUrlsQuery(options: Omit<Urql.UseQueryArgs<GetUserUrlsQueryVariables>, 'query'> = {}) {
+  return Urql.useQuery<GetUserUrlsQuery>({ query: GetUserUrlsDocument, ...options });
 };
 export const MeDocument = gql`
     query me {

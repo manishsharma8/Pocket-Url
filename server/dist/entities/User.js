@@ -12,13 +12,24 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.User = void 0;
 const type_graphql_1 = require("type-graphql");
 const typeorm_1 = require("typeorm");
+const nanoid_1 = require("nanoid");
+const Url_1 = require("./Url");
 let User = class User extends typeorm_1.BaseEntity {
+    generate() {
+        this.id = nanoid_1.nanoid(11);
+    }
 };
 __decorate([
     type_graphql_1.Field(),
-    typeorm_1.PrimaryGeneratedColumn(),
-    __metadata("design:type", Number)
+    typeorm_1.PrimaryColumn(),
+    __metadata("design:type", String)
 ], User.prototype, "id", void 0);
+__decorate([
+    typeorm_1.BeforeInsert(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], User.prototype, "generate", null);
 __decorate([
     type_graphql_1.Field(),
     typeorm_1.Column({ unique: true }),
@@ -33,6 +44,10 @@ __decorate([
     typeorm_1.Column(),
     __metadata("design:type", String)
 ], User.prototype, "password", void 0);
+__decorate([
+    typeorm_1.OneToMany(() => Url_1.Url, (url) => url.creator, { cascade: true }),
+    __metadata("design:type", Array)
+], User.prototype, "urls", void 0);
 __decorate([
     type_graphql_1.Field(() => String),
     typeorm_1.CreateDateColumn(),

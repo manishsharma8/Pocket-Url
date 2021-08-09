@@ -1,10 +1,12 @@
 import { Field, Form, Formik } from 'formik';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import Layout from '../components/Layout';
 import { useLoginMutation } from '../generated/graphql';
 
 const Login: React.FC<{}> = ({}) => {
+	const router = useRouter();
 	const [, login] = useLoginMutation();
 	return (
 		<Layout>
@@ -22,8 +24,9 @@ const Login: React.FC<{}> = ({}) => {
 					<Formik
 						initialValues={{ usernameOrEmail: '', password: '' }}
 						onSubmit={async (values, actions) => {
-							const response = await login(values);
-							console.log('response', response.data?.login.user);
+							await login(values);
+							await router.push('/');
+							router.reload();
 						}}
 					>
 						{({ errors, touched }) => (

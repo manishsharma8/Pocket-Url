@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Url = void 0;
 const type_graphql_1 = require("type-graphql");
 const typeorm_1 = require("typeorm");
+const User_1 = require("./User");
 let Url = class Url extends typeorm_1.BaseEntity {
 };
 __decorate([
@@ -19,6 +20,11 @@ __decorate([
     typeorm_1.PrimaryGeneratedColumn(),
     __metadata("design:type", Number)
 ], Url.prototype, "id", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    typeorm_1.Column({ type: 'text', nullable: true }),
+    __metadata("design:type", String)
+], Url.prototype, "title", void 0);
 __decorate([
     type_graphql_1.Field(),
     typeorm_1.Column(),
@@ -29,6 +35,16 @@ __decorate([
     typeorm_1.Column(),
     __metadata("design:type", String)
 ], Url.prototype, "shortUrl", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    typeorm_1.Column(),
+    __metadata("design:type", String)
+], Url.prototype, "creatorId", void 0);
+__decorate([
+    typeorm_1.ManyToOne(() => User_1.User, (user) => user.urls, { onDelete: 'CASCADE' }),
+    typeorm_1.JoinColumn({ name: 'creatorId' }),
+    __metadata("design:type", User_1.User)
+], Url.prototype, "creator", void 0);
 __decorate([
     type_graphql_1.Field(() => String),
     typeorm_1.CreateDateColumn(),

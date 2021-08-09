@@ -11,7 +11,12 @@ const RedirectUrl = () => {
 	});
 
 	if (data) {
-		window.location.href = data.getUrl?.longUrl as string;
+		const longUrl = data.getUrl?.longUrl;
+		if (longUrl?.includes('http')) {
+			window.location.assign(longUrl);
+		} else {
+			window.location.assign(`https://${longUrl}`);
+		}
 		return null;
 	} else return <></>;
 };

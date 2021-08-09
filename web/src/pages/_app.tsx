@@ -1,7 +1,7 @@
-import '../styles/globals.css';
 import type { AppProps } from 'next/app';
 import React from 'react';
 import { createClient, Provider } from 'urql';
+import '../styles/globals.css';
 
 const client = createClient({
 	url: 'http://localhost:4000/graphql',

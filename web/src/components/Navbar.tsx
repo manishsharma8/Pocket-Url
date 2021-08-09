@@ -32,6 +32,7 @@ const Navbar: React.FC<{}> = ({}) => {
 						onClick={async () => {
 							await logout();
 							router.push('/');
+							router.reload();
 						}}
 					>
 						Logout

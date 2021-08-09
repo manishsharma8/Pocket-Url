@@ -34,12 +34,16 @@ class UserResponse {
 export class UserResolver {
 	@Query(() => User, { nullable: true })
 	me(@Ctx() { req, res }: MyContext) {
-		console.log('me query --->', req.session);
 		if (!req.session.userId) {
 			return null;
 		} else {
 			return User.findOne(req.session.userId);
 		}
+	}
+
+	@Query(() => [User], { nullable: true })
+	allUser(): Promise<User[]> {
+		return User.find({});
 	}
 
 	@Mutation(() => UserResponse)

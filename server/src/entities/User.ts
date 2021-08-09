@@ -1,19 +1,28 @@
 import { ObjectType, Field } from 'type-graphql';
 import {
 	BaseEntity,
+	BeforeInsert,
 	Column,
 	CreateDateColumn,
 	Entity,
-	PrimaryGeneratedColumn,
+	OneToMany,
+	PrimaryColumn,
 	UpdateDateColumn,
 } from 'typeorm';
+import { nanoid } from 'nanoid';
+import { Url } from './Url';
 
 @ObjectType()
 @Entity()
 export class User extends BaseEntity {
 	@Field()
-	@PrimaryGeneratedColumn()
-	id!: number;
+	@PrimaryColumn()
+	id!: string;
+
+	@BeforeInsert()
+	generate() {
+		this.id = nanoid(11);
+	}
 
 	@Field()
 	@Column({ unique: true })
@@ -25,6 +34,9 @@ export class User extends BaseEntity {
 
 	@Column()
 	password!: string;
+
+	@OneToMany(() => Url, (url) => url.creator, { cascade: true })
+	urls: Url[];
 
 	@Field(() => String)
 	@CreateDateColumn()

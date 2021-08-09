@@ -1,0 +1,8 @@
+query getUserUrls {
+	getUserUrls {
+		id
+		longUrl
+		shortUrl
+		createdAt
+	}
+}
