@@ -1,0 +1,7 @@
+query urlVisits($id: Int!) {
+	urlVisits(id: $id) {
+		urlId
+		date
+		count
+	}
+}

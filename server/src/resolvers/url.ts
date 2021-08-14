@@ -6,11 +6,13 @@ import {
 	Query,
 	Ctx,
 	UseMiddleware,
+	Int,
 } from 'type-graphql';
 import { nanoid } from 'nanoid';
 import { MyContext } from '../types';
 import { isAuth } from '../middleware/isAuth';
-import { User } from '../entities/User';
+import { Visit } from '../entities/Visit';
+import { getConnection } from 'typeorm';
 
 @Resolver(Url)
 export class UrlResolver {
@@ -44,13 +46,39 @@ export class UrlResolver {
 	@Mutation(() => Url)
 	async createShorterUrl(
 		@Arg('longUrl') longUrl: string,
+		@Arg('title', { nullable: true }) title: string,
+		@Arg('shortUrl', { nullable: true }) shortUrl: string,
 		@Ctx() { req }: MyContext
 	) {
-		const shortUrl = nanoid(7);
-		return Url.create({
-			longUrl,
-			shortUrl,
-			creatorId: req.session.userId,
-		}).save();
+		if (shortUrl) {
+			const url = await Url.findOne({ where: { shortUrl: shortUrl } });
+			if (!url) {
+				try {
+					return Url.create({
+						longUrl,
+						shortUrl,
+						creatorId: req.session.userId,
+						title,
+					}).save();
+				} catch (err) {
+					return err;
+				}
+			} else throw new Error('This alias already exist');
+		} else {
+			const _shortUrl = nanoid(7);
+			return Url.create({
+				longUrl,
+				shortUrl: _shortUrl,
+				creatorId: req.session.userId,
+				title,
+			}).save();
+		}
+	}
+
+	@UseMiddleware(isAuth)
+	@Mutation(() => Boolean)
+	async deleteUrl(@Arg('id', () => Int) id: number, @Ctx() { req }: MyContext) {
+		await Url.delete({ id, creatorId: req.session.userId });
+		return true;
 	}
 }

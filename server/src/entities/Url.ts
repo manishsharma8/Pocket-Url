@@ -6,10 +6,12 @@ import {
 	Entity,
 	JoinColumn,
 	ManyToOne,
+	OneToMany,
 	PrimaryGeneratedColumn,
 	UpdateDateColumn,
 } from 'typeorm';
 import { User } from './User';
+import { Visit } from './Visit';
 
 @ObjectType()
 @Entity()
@@ -18,7 +20,7 @@ export class Url extends BaseEntity {
 	@PrimaryGeneratedColumn()
 	id!: number;
 
-	@Field()
+	@Field(() => String, { nullable: true })
 	@Column({ type: 'text', nullable: true })
 	title: string;
 
@@ -37,6 +39,9 @@ export class Url extends BaseEntity {
 	@ManyToOne(() => User, (user) => user.urls, { onDelete: 'CASCADE' })
 	@JoinColumn({ name: 'creatorId' })
 	creator: User;
+
+	@OneToMany(() => Visit, (visit) => visit.url, { cascade: true })
+	visits: Visit[];
 
 	@Field(() => String)
 	@CreateDateColumn()

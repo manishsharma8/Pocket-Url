@@ -1,6 +1,7 @@
 query getUserUrls {
 	getUserUrls {
 		id
+		title
 		longUrl
 		shortUrl
 		createdAt

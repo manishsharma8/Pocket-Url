@@ -13,6 +13,7 @@ exports.Url = void 0;
 const type_graphql_1 = require("type-graphql");
 const typeorm_1 = require("typeorm");
 const User_1 = require("./User");
+const Visit_1 = require("./Visit");
 let Url = class Url extends typeorm_1.BaseEntity {
 };
 __decorate([
@@ -21,7 +22,7 @@ __decorate([
     __metadata("design:type", Number)
 ], Url.prototype, "id", void 0);
 __decorate([
-    type_graphql_1.Field(),
+    type_graphql_1.Field(() => String, { nullable: true }),
     typeorm_1.Column({ type: 'text', nullable: true }),
     __metadata("design:type", String)
 ], Url.prototype, "title", void 0);
@@ -45,6 +46,10 @@ __decorate([
     typeorm_1.JoinColumn({ name: 'creatorId' }),
     __metadata("design:type", User_1.User)
 ], Url.prototype, "creator", void 0);
+__decorate([
+    typeorm_1.OneToMany(() => Visit_1.Visit, (visit) => visit.url, { cascade: true }),
+    __metadata("design:type", Array)
+], Url.prototype, "visits", void 0);
 __decorate([
     type_graphql_1.Field(() => String),
     typeorm_1.CreateDateColumn(),

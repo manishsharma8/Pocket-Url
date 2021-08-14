@@ -23,14 +23,24 @@ export type FieldError = {
 export type Mutation = {
   __typename?: 'Mutation';
   createShorterUrl: Url;
+  deleteUrl: Scalars['Boolean'];
   signup: UserResponse;
   login: UserResponse;
   logout: Scalars['Boolean'];
+  countPlusOne: Visit;
+  genCount: Visit;
 };
 
 
 export type MutationCreateShorterUrlArgs = {
+  shortUrl?: Maybe<Scalars['String']>;
+  title?: Maybe<Scalars['String']>;
   longUrl: Scalars['String'];
+};
+
+
+export type MutationDeleteUrlArgs = {
+  id: Scalars['Int'];
 };
 
 
@@ -44,6 +54,16 @@ export type MutationLoginArgs = {
   usernameOrEmail: Scalars['String'];
 };
 
+
+export type MutationCountPlusOneArgs = {
+  id: Scalars['Int'];
+};
+
+
+export type MutationGenCountArgs = {
+  id: Scalars['Int'];
+};
+
 export type Query = {
   __typename?: 'Query';
   hello: Scalars['String'];
@@ -52,6 +72,8 @@ export type Query = {
   getUrl?: Maybe<Url>;
   me?: Maybe<User>;
   allUser?: Maybe<Array<User>>;
+  urlVisits: Array<Visit>;
+  allVisits: Array<Visit>;
 };
 
 
@@ -59,9 +81,15 @@ export type QueryGetUrlArgs = {
   shortUrl: Scalars['String'];
 };
 
+
+export type QueryUrlVisitsArgs = {
+  id: Scalars['Int'];
+};
+
 export type Url = {
   __typename?: 'Url';
   id: Scalars['Float'];
+  title?: Maybe<Scalars['String']>;
   longUrl: Scalars['String'];
   shortUrl: Scalars['String'];
   creatorId: Scalars['String'];
@@ -90,8 +118,31 @@ export type UserResponse = {
   user?: Maybe<User>;
 };
 
+export type Visit = {
+  __typename?: 'Visit';
+  id: Scalars['Float'];
+  date: Scalars['String'];
+  count: Scalars['Float'];
+  urlId: Scalars['Float'];
+};
+
+export type CountPlusOneMutationVariables = Exact<{
+  id: Scalars['Int'];
+}>;
+
+
+export type CountPlusOneMutation = (
+  { __typename?: 'Mutation' }
+  & { countPlusOne: (
+    { __typename?: 'Visit' }
+    & Pick<Visit, 'urlId' | 'date' | 'count'>
+  ) }
+);
+
 export type CreateShorterUrlMutationVariables = Exact<{
   longUrl: Scalars['String'];
+  title?: Maybe<Scalars['String']>;
+  shortUrl?: Maybe<Scalars['String']>;
 }>;
 
 
@@ -99,8 +150,18 @@ export type CreateShorterUrlMutation = (
   { __typename?: 'Mutation' }
   & { createShorterUrl: (
     { __typename?: 'Url' }
-    & Pick<Url, 'id' | 'longUrl' | 'shortUrl' | 'createdAt' | 'updatedAt'>
+    & Pick<Url, 'id' | 'title' | 'longUrl' | 'shortUrl' | 'createdAt' | 'updatedAt' | 'creatorId'>
   ) }
+);
+
+export type DeleteUrlMutationVariables = Exact<{
+  id: Scalars['Int'];
+}>;
+
+
+export type DeleteUrlMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'deleteUrl'>
 );
 
 export type LoginMutationVariables = Exact<{
@@ -153,7 +214,7 @@ export type GetUrlQuery = (
   { __typename?: 'Query' }
   & { getUrl?: Maybe<(
     { __typename?: 'Url' }
-    & Pick<Url, 'id' | 'longUrl'>
+    & Pick<Url, 'id' | 'title' | 'longUrl'>
   )> }
 );
 
@@ -164,7 +225,7 @@ export type GetUserUrlsQuery = (
   { __typename?: 'Query' }
   & { getUserUrls?: Maybe<Array<(
     { __typename?: 'Url' }
-    & Pick<Url, 'id' | 'longUrl' | 'shortUrl' | 'createdAt'>
+    & Pick<Url, 'id' | 'title' | 'longUrl' | 'shortUrl' | 'createdAt'>
   )>> }
 );
 
@@ -179,6 +240,19 @@ export type MeQuery = (
   )> }
 );
 
+export type UrlVisitsQueryVariables = Exact<{
+  id: Scalars['Int'];
+}>;
+
+
+export type UrlVisitsQuery = (
+  { __typename?: 'Query' }
+  & { urlVisits: Array<(
+    { __typename?: 'Visit' }
+    & Pick<Visit, 'urlId' | 'date' | 'count'>
+  )> }
+);
+
 export type UrlsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -186,25 +260,49 @@ export type UrlsQuery = (
   { __typename?: 'Query' }
   & { Urls?: Maybe<Array<(
     { __typename?: 'Url' }
-    & Pick<Url, 'id' | 'longUrl' | 'shortUrl'>
+    & Pick<Url, 'id' | 'title' | 'longUrl' | 'shortUrl'>
   )>> }
 );
 
 
+export const CountPlusOneDocument = gql`
+    mutation countPlusOne($id: Int!) {
+  countPlusOne(id: $id) {
+    urlId
+    date
+    count
+  }
+}
+    `;
+
+export function useCountPlusOneMutation() {
+  return Urql.useMutation<CountPlusOneMutation, CountPlusOneMutationVariables>(CountPlusOneDocument);
+};
 export const CreateShorterUrlDocument = gql`
-    mutation createShorterUrl($longUrl: String!) {
-  createShorterUrl(longUrl: $longUrl) {
+    mutation createShorterUrl($longUrl: String!, $title: String, $shortUrl: String) {
+  createShorterUrl(longUrl: $longUrl, title: $title, shortUrl: $shortUrl) {
     id
+    title
     longUrl
     shortUrl
     createdAt
     updatedAt
+    creatorId
   }
 }
     `;
 
 export function useCreateShorterUrlMutation() {
   return Urql.useMutation<CreateShorterUrlMutation, CreateShorterUrlMutationVariables>(CreateShorterUrlDocument);
+};
+export const DeleteUrlDocument = gql`
+    mutation deleteUrl($id: Int!) {
+  deleteUrl(id: $id)
+}
+    `;
+
+export function useDeleteUrlMutation() {
+  return Urql.useMutation<DeleteUrlMutation, DeleteUrlMutationVariables>(DeleteUrlDocument);
 };
 export const LoginDocument = gql`
     mutation login($usernameOrEmail: String!, $password: String!) {
@@ -249,6 +347,7 @@ export const GetUrlDocument = gql`
     query getUrl($shortUrl: String!) {
   getUrl(shortUrl: $shortUrl) {
     id
+    title
     longUrl
   }
 }
@@ -261,6 +360,7 @@ export const GetUserUrlsDocument = gql`
     query getUserUrls {
   getUserUrls {
     id
+    title
     longUrl
     shortUrl
     createdAt
@@ -284,10 +384,24 @@ export const MeDocument = gql`
 export function useMeQuery(options: Omit<Urql.UseQueryArgs<MeQueryVariables>, 'query'> = {}) {
   return Urql.useQuery<MeQuery>({ query: MeDocument, ...options });
 };
+export const UrlVisitsDocument = gql`
+    query urlVisits($id: Int!) {
+  urlVisits(id: $id) {
+    urlId
+    date
+    count
+  }
+}
+    `;
+
+export function useUrlVisitsQuery(options: Omit<Urql.UseQueryArgs<UrlVisitsQueryVariables>, 'query'> = {}) {
+  return Urql.useQuery<UrlVisitsQuery>({ query: UrlVisitsDocument, ...options });
+};
 export const UrlsDocument = gql`
     query Urls {
   Urls {
     id
+    title
     longUrl
     shortUrl
   }

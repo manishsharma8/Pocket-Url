@@ -1,0 +1,7 @@
+mutation countPlusOne($id: Int!) {
+	countPlusOne(id: $id) {
+		urlId
+		date
+		count
+	}
+}

@@ -1,14 +1,41 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useDeleteUrlMutation } from '../../generated/graphql';
+import Toast from '../Toast';
 
 interface ActionButtonProps {
+	id: number;
 	dwarfUrl: string;
+	deleteButton?: boolean;
 }
 
-const ActionButton: React.FC<ActionButtonProps> = ({ dwarfUrl }) => {
+const ActionButton: React.FC<ActionButtonProps> = ({
+	dwarfUrl,
+	deleteButton,
+	id,
+}) => {
+	const [, deleteUrl] = useDeleteUrlMutation();
+	const [message, setMessage] = useState<string | null>(null);
+	const [show, setShow] = useState<boolean>(false);
+
+	useEffect(() => {
+		const interval = setInterval(() => {
+			if (message) {
+				setShow(false);
+				setMessage(null);
+			}
+		}, 5000);
+		return () => clearInterval(interval);
+	}, [message]);
+
 	return (
-		<div className="grid grid-cols-4 gap-3 mt-10 text-base text-center">
+		<div
+			className={`grid ${
+				deleteButton ? 'grid-cols-5' : 'grid-cols-4'
+			} gap-3 mt-10 text-base text-center`}
+		>
+			{show && message ? <Toast message={message} /> : null}
 			<button
-				className="bg-green-500 px-2 py-2 rounded flex items-center justify-center gap-1"
+				className="bg-green-500 hover:bg-transparent border-green-500  ease-in transition border-2 px-2 py-2 rounded flex items-center justify-center gap-1"
 				type="button"
 				onClick={() => window.open(dwarfUrl, '_blank')}
 			>
@@ -28,7 +55,7 @@ const ActionButton: React.FC<ActionButtonProps> = ({ dwarfUrl }) => {
 				</svg>
 				Redirect
 			</button>
-			<button className="bg-green-500 px-2 py-2 rounded flex items-center justify-center gap-1">
+			<button className="bg-green-500 hover:bg-transparent border-green-500 ease-in transition border-2 px-2 py-2 rounded flex items-center justify-center gap-1">
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
 					className="h-4 w-4"
@@ -45,7 +72,7 @@ const ActionButton: React.FC<ActionButtonProps> = ({ dwarfUrl }) => {
 				</svg>
 				Edit
 			</button>
-			<button className="bg-green-500 px-2 py-2 rounded flex items-center justify-center gap-1">
+			<button className="bg-green-500 hover:bg-transparent border-green-500 ease-in transition border-2 px-2 py-2 rounded flex items-center justify-center gap-1">
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
 					className="h-4 w-4"
@@ -63,10 +90,12 @@ const ActionButton: React.FC<ActionButtonProps> = ({ dwarfUrl }) => {
 				Share
 			</button>
 			<button
-				className="bg-green-500 px-2 py-2 rounded flex items-center justify-center gap-1"
+				className="bg-green-500 hover:bg-transparent border-green-500 ease-in transition border-2 px-2 py-2 rounded flex items-center justify-center gap-1"
 				type="button"
 				onClick={() => {
 					navigator.clipboard.writeText(dwarfUrl);
+					setMessage('Copied to Clipboard!');
+					setShow(true);
 				}}
 			>
 				<svg
@@ -85,6 +114,33 @@ const ActionButton: React.FC<ActionButtonProps> = ({ dwarfUrl }) => {
 				</svg>
 				Copy
 			</button>
+			{deleteButton ? (
+				<button
+					className="bg-green-500 hover:bg-transparent border-green-500 ease-in transition border-2 px-2 py-2 rounded flex items-center justify-center gap-1"
+					type="button"
+					onClick={async () => {
+						await deleteUrl({ id });
+						setMessage('Link Deleted!');
+						setShow(true);
+					}}
+				>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						className="h-6 w-6"
+						fill="none"
+						viewBox="0 0 24 24"
+						stroke="currentColor"
+					>
+						<path
+							strokeLinecap="round"
+							strokeLinejoin="round"
+							strokeWidth={2}
+							d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+						/>
+					</svg>
+					Delete
+				</button>
+			) : null}
 		</div>
 	);
 };

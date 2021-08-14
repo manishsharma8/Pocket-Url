@@ -1,0 +1,3 @@
+mutation deleteUrl($id: Int!) {
+	deleteUrl(id: $id)
+}

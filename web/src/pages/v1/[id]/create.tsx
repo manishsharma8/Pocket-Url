@@ -76,7 +76,7 @@ const CreateUrl: React.FC<{}> = ({}) => {
 						Home
 					</div>
 				</Link>
-				<div className="grid m-16">
+				<div className="grid m-10">
 					<div className="flex justify-center items-center text-white my-10 mx-auto w-2/5">
 						<div className="border-2 border-gray-800 p-10 rounded">
 							<div className="text-3xl mt-10 mb-3 text-center font-bold">
@@ -86,10 +86,14 @@ const CreateUrl: React.FC<{}> = ({}) => {
 								Amet qui eiusmod veniam non veniam et.
 							</div>
 							<Formik
-								initialValues={{ longUrl: '' }}
+								initialValues={{ longUrl: '', alias: null, title: null }}
 								validationSchema={UrlSchema}
 								onSubmit={async (values) => {
-									const response = await createUrl({ longUrl: values.longUrl });
+									const response = await createUrl({
+										longUrl: values.longUrl,
+										shortUrl: values.alias,
+										title: values.title,
+									});
 									if (response.data?.createShorterUrl.shortUrl) {
 										setDwarfUrl(
 											`http://localhost:3000/${response.data?.createShorterUrl.shortUrl}`
@@ -118,8 +122,8 @@ const CreateUrl: React.FC<{}> = ({}) => {
 											</div>
 										) : null}
 
-										{/* <label
-											className="text-left p-2 text-gray-300 text-base"
+										<label
+											className="text-left p-2 text-gray-300 text-base inline-block mt-5"
 											htmlFor="title"
 										>
 											Title
@@ -130,14 +134,33 @@ const CreateUrl: React.FC<{}> = ({}) => {
 											name="title"
 											autoComplete="off"
 											placeholder=""
-										/> */}
+										/>
+
+										<label
+											className="text-left p-2 text-gray-300 text-base inline-block mt-5"
+											htmlFor="alias"
+										>
+											Customize your link
+										</label>
+										<div className="flex justify-center items-center">
+											<span className="bg-gray-800 px-3 py-2 text-gray-500 border-r-2 border-gray-700">
+												http://localhost:3000/
+											</span>
+											<Field
+												className="w-full px-3 py-2 outline-none bg-gray-800 rounded text-gray-300"
+												id="alias"
+												name="alias"
+												autoComplete="off"
+												placeholder="alias"
+											/>
+										</div>
 
 										{fieldOnSubmit}
 										<button
-											className="block mx-auto my-6 bg-blue-500 text-white w-full py-2 rounded"
+											className="block mx-auto mt-12 mb-7 bg-blue-500 text-white w-full py-2 rounded"
 											type="submit"
 										>
-											{!dwarfUrl ? 'Submit' : 'Save'}
+											{!dwarfUrl ? 'Create' : 'Back to Home'}
 										</button>
 									</Form>
 								)}

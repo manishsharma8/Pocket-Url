@@ -1,9 +1,15 @@
-mutation createShorterUrl($longUrl: String!) {
-	createShorterUrl(longUrl: $longUrl) {
+mutation createShorterUrl(
+	$longUrl: String!
+	$title: String
+	$shortUrl: String
+) {
+	createShorterUrl(longUrl: $longUrl, title: $title, shortUrl: $shortUrl) {
 		id
+		title
 		longUrl
 		shortUrl
 		createdAt
 		updatedAt
+		creatorId
 	}
 }

@@ -13,6 +13,8 @@ import { UserResolver } from './resolvers/user';
 import Redis from 'ioredis';
 import connectRedis from 'connect-redis';
 import session from 'express-session';
+import { Visit } from './entities/Visit';
+import { VisitResolver } from './resolvers/visit';
 
 const main = async () => {
 	const conn = await createConnection({
@@ -22,7 +24,7 @@ const main = async () => {
 		password: 'postgres',
 		logging: true,
 		synchronize: true,
-		entities: [Url, User],
+		entities: [Url, User, Visit],
 	});
 
 	// await Url.delete({});
@@ -58,7 +60,7 @@ const main = async () => {
 
 	const apolloServer = new ApolloServer({
 		schema: await buildSchema({
-			resolvers: [HelloResolver, UrlResolver, UserResolver],
+			resolvers: [HelloResolver, UrlResolver, UserResolver, VisitResolver],
 			validate: false,
 		}),
 		plugins: [ApolloServerPluginLandingPageGraphQLPlayground()],
