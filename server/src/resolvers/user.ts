@@ -12,6 +12,10 @@ import { User } from '../entities/User';
 import { UserFieldInput } from './UserFieldInput';
 import { validateRegister } from '../utils/validateRegister';
 import { MyContext } from '../types';
+import { nanoid } from 'nanoid';
+import { FORGOT_PASSWORD_PREFIX } from '../constants';
+import { sendMail } from '../utils/sendMail';
+import { SimpleConsoleLogger } from 'typeorm';
 
 @ObjectType()
 class FieldError {
@@ -108,9 +112,81 @@ export class UserResolver {
 	}
 
 	@Mutation(() => Boolean)
+	async forgotPassword(
+		@Arg('email') email: string,
+		@Ctx() { redis }: MyContext
+	) {
+		const user = await User.findOne({ where: { email } });
+		if (!user) {
+			return true;
+		}
+
+		const token = nanoid();
+		await redis.set(
+			FORGOT_PASSWORD_PREFIX + token,
+			user.id,
+			'ex',
+			1000 * 60 * 60 * 24 * 3 // 3 days expiry time
+		);
+
+		await sendMail(email, `<div>Forgot Password ${token}</div>`);
+		return true;
+	}
+
+	@Mutation(() => UserResponse)
+	async changePassword(
+		@Arg('token') token: string,
+		@Arg('newPassword') newPassword: string,
+		@Ctx() { redis, req }: MyContext
+	) {
+		if (newPassword.length <= 2) {
+			return {
+				errors: [
+					{
+						field: 'newPassword',
+						message: 'Password must be at least 2 characters long',
+					},
+				],
+			};
+		}
+
+		const key = FORGOT_PASSWORD_PREFIX + token;
+		const userId = await redis.get(key);
+		if (!userId) {
+			return {
+				errors: [
+					{
+						field: 'token',
+						message: 'Token Expired',
+					},
+				],
+			};
+		}
+
+		const user = await User.findOne(userId);
+		if (!user) {
+			return {
+				errors: [
+					{
+						field: 'token',
+						message: 'User does not exist.',
+					},
+				],
+			};
+		}
+		await User.update(
+			{ id: userId },
+			{ password: await argon2.hash(newPassword) }
+		);
+		await redis.del(key);
+		req.session.userId = user.id;
+		return { user };
+	}
+
+	@Mutation(() => Boolean)
 	logout(@Ctx() { req, res }: MyContext) {
 		return new Promise((resolve) => {
-			res.clearCookie('qid');
+			res.clearCookie(process.env.COOKIE_NAME as string);
 			req.session.destroy((err) => {
 				if (err) {
 					resolve(false);

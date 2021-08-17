@@ -11,8 +11,6 @@ import {
 import { nanoid } from 'nanoid';
 import { MyContext } from '../types';
 import { isAuth } from '../middleware/isAuth';
-import { Visit } from '../entities/Visit';
-import { getConnection } from 'typeorm';
 
 @Resolver(Url)
 export class UrlResolver {

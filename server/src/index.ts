@@ -1,3 +1,4 @@
+require('dotenv').config();
 import 'reflect-metadata';
 import express from 'express';
 import { ApolloServer } from 'apollo-server-express';
@@ -26,7 +27,6 @@ const main = async () => {
 		synchronize: true,
 		entities: [Url, User, Visit],
 	});
-
 	// await Url.delete({});
 	// await User.delete({});
 
@@ -37,23 +37,23 @@ const main = async () => {
 
 	app.use(
 		cors({
-			origin: 'http://localhost:3000',
+			origin: process.env.CLIENT_SERVER,
 			credentials: true,
 		})
 	);
 
 	app.use(
 		session({
-			name: 'qid',
+			name: process.env.COOKIE_NAME,
 			store: new RedisStore({ client: redis, disableTouch: true }),
 			cookie: {
-				maxAge: 1000 * 60 * 60 * 24 * 2, //2 days
+				maxAge: 1000 * 60 * 60 * 24 * 365, //365 days
 				httpOnly: true,
 				sameSite: 'lax', //csrf
 				secure: false, //cookie only works in https
 			},
 			saveUninitialized: false,
-			secret: 'fsxkdbkjwnijsolqk',
+			secret: process.env.COOKIE_SECRET as string,
 			resave: false,
 		})
 	);
@@ -74,7 +74,7 @@ const main = async () => {
 	await apolloServer.start();
 	apolloServer.applyMiddleware({ app, cors: false });
 
-	app.listen(4000, () => {
+	app.listen(process.env.SERVER_PORT || 4000, () => {
 		console.log('Server started at localhost:4000');
 	});
 };

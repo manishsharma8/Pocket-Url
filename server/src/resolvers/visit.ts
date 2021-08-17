@@ -1,6 +1,5 @@
 import { Visit } from '../entities/Visit';
-import { MyContext } from '../types';
-import { Arg, Ctx, Int, Mutation, Query, Resolver } from 'type-graphql';
+import { Arg, Int, Mutation, Query, Resolver } from 'type-graphql';
 import { getConnection } from 'typeorm';
 
 @Resolver(Visit)

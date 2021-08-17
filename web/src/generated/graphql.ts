@@ -26,6 +26,8 @@ export type Mutation = {
   deleteUrl: Scalars['Boolean'];
   signup: UserResponse;
   login: UserResponse;
+  forgotPassword: Scalars['Boolean'];
+  changePassword: UserResponse;
   logout: Scalars['Boolean'];
   countPlusOne: Visit;
   genCount: Visit;
@@ -52,6 +54,17 @@ export type MutationSignupArgs = {
 export type MutationLoginArgs = {
   password: Scalars['String'];
   usernameOrEmail: Scalars['String'];
+};
+
+
+export type MutationForgotPasswordArgs = {
+  email: Scalars['String'];
+};
+
+
+export type MutationChangePasswordArgs = {
+  newPassword: Scalars['String'];
+  token: Scalars['String'];
 };
 
 
@@ -126,6 +139,26 @@ export type Visit = {
   urlId: Scalars['Float'];
 };
 
+export type ChangePasswordMutationVariables = Exact<{
+  token: Scalars['String'];
+  newPassword: Scalars['String'];
+}>;
+
+
+export type ChangePasswordMutation = (
+  { __typename?: 'Mutation' }
+  & { changePassword: (
+    { __typename?: 'UserResponse' }
+    & { user?: Maybe<(
+      { __typename?: 'User' }
+      & Pick<User, 'id' | 'username' | 'email'>
+    )>, errors?: Maybe<Array<(
+      { __typename?: 'FieldError' }
+      & Pick<FieldError, 'field' | 'message'>
+    )>> }
+  ) }
+);
+
 export type CountPlusOneMutationVariables = Exact<{
   id: Scalars['Int'];
 }>;
@@ -162,6 +195,16 @@ export type DeleteUrlMutationVariables = Exact<{
 export type DeleteUrlMutation = (
   { __typename?: 'Mutation' }
   & Pick<Mutation, 'deleteUrl'>
+);
+
+export type ForgotPasswordMutationVariables = Exact<{
+  email: Scalars['String'];
+}>;
+
+
+export type ForgotPasswordMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'forgotPassword'>
 );
 
 export type LoginMutationVariables = Exact<{
@@ -265,6 +308,25 @@ export type UrlsQuery = (
 );
 
 
+export const ChangePasswordDocument = gql`
+    mutation changePassword($token: String!, $newPassword: String!) {
+  changePassword(token: $token, newPassword: $newPassword) {
+    user {
+      id
+      username
+      email
+    }
+    errors {
+      field
+      message
+    }
+  }
+}
+    `;
+
+export function useChangePasswordMutation() {
+  return Urql.useMutation<ChangePasswordMutation, ChangePasswordMutationVariables>(ChangePasswordDocument);
+};
 export const CountPlusOneDocument = gql`
     mutation countPlusOne($id: Int!) {
   countPlusOne(id: $id) {
@@ -303,6 +365,15 @@ export const DeleteUrlDocument = gql`
 
 export function useDeleteUrlMutation() {
   return Urql.useMutation<DeleteUrlMutation, DeleteUrlMutationVariables>(DeleteUrlDocument);
+};
+export const ForgotPasswordDocument = gql`
+    mutation forgotPassword($email: String!) {
+  forgotPassword(email: $email)
+}
+    `;
+
+export function useForgotPasswordMutation() {
+  return Urql.useMutation<ForgotPasswordMutation, ForgotPasswordMutationVariables>(ForgotPasswordDocument);
 };
 export const LoginDocument = gql`
     mutation login($usernameOrEmail: String!, $password: String!) {

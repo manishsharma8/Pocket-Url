@@ -3,6 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+require('dotenv').config();
 require("reflect-metadata");
 const express_1 = __importDefault(require("express"));
 const apollo_server_express_1 = require("apollo-server-express");
@@ -34,20 +35,20 @@ const main = async () => {
     const RedisStore = connect_redis_1.default(express_session_1.default);
     const redis = new ioredis_1.default();
     app.use(cors_1.default({
-        origin: 'http://localhost:3000',
+        origin: process.env.CLIENT_SERVER,
         credentials: true,
     }));
     app.use(express_session_1.default({
-        name: 'qid',
+        name: process.env.COOKIE_NAME,
         store: new RedisStore({ client: redis, disableTouch: true }),
         cookie: {
-            maxAge: 1000 * 60 * 60 * 24 * 2,
+            maxAge: 1000 * 60 * 60 * 24 * 365,
             httpOnly: true,
             sameSite: 'lax',
             secure: false,
         },
         saveUninitialized: false,
-        secret: 'fsxkdbkjwnijsolqk',
+        secret: process.env.COOKIE_SECRET,
         resave: false,
     }));
     const apolloServer = new apollo_server_express_1.ApolloServer({
@@ -64,7 +65,7 @@ const main = async () => {
     });
     await apolloServer.start();
     apolloServer.applyMiddleware({ app, cors: false });
-    app.listen(4000, () => {
+    app.listen(process.env.SERVER_PORT || 4000, () => {
         console.log('Server started at localhost:4000');
     });
 };
