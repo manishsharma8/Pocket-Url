@@ -129,7 +129,10 @@ export class UserResolver {
 			1000 * 60 * 60 * 24 * 3 // 3 days expiry time
 		);
 
-		await sendMail(email, `<div>Forgot Password ${token}</div>`);
+		await sendMail(
+			email,
+			`<div><a href="http://localhost:3000/change-password/${token}">Reset Password</a></div>`
+		);
 		return true;
 	}
 
@@ -157,7 +160,7 @@ export class UserResolver {
 				errors: [
 					{
 						field: 'token',
-						message: 'Token Expired',
+						message: 'Token Expired!',
 					},
 				],
 			};

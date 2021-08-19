@@ -63,8 +63,8 @@ const Login: React.FC<{}> = ({}) => {
 									name="password"
 									autoComplete="off"
 								/>
-								<div className="float-right mt-2 text-base">
-									Forgot Password?
+								<div className="float-right mt-2 text-base hover:underline">
+									<Link href="/forgot-password">Forgot Password?</Link>
 								</div>
 								<button
 									className="block mx-auto mt-16 mb-6 bg-blue-500 text-white w-full py-2 rounded"

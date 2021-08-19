@@ -117,7 +117,7 @@ let UserResolver = class UserResolver {
         }
         const token = nanoid_1.nanoid();
         await redis.set(constants_1.FORGOT_PASSWORD_PREFIX + token, user.id, 'ex', 1000 * 60 * 60 * 24 * 3);
-        await sendMail_1.sendMail(email, `<div>Forgot Password ${token}</div>`);
+        await sendMail_1.sendMail(email, `<div><a href="http://localhost:3000/change-password/${token}">Reset Password</a></div>`);
         return true;
     }
     async changePassword(token, newPassword, { redis, req }) {
@@ -138,7 +138,7 @@ let UserResolver = class UserResolver {
                 errors: [
                     {
                         field: 'token',
-                        message: 'Token Expired',
+                        message: 'Token Expired!',
                     },
                 ],
             };

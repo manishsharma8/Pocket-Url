@@ -43,7 +43,7 @@ const Navbar: React.FC<{}> = ({}) => {
 	}
 
 	return (
-		<div className="flex px-10 py-4 text-white border-b-2 border-gray-800 bg-gray-900 z-10">
+		<div className="flex px-10 py-4 text-white border-b-2 border-gray-800 bg-gray-900 z-50">
 			<div className="text-2xl font-bold">
 				<Link href="/">TinyUrl</Link>
 			</div>
