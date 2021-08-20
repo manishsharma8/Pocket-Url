@@ -29,13 +29,22 @@ const Dashboard: React.FC<{}> = ({}) => {
 
 	if (data?.me && selectedUrl) {
 		return (
-			<div className="h-screen">
+			<div className="h-screen grid">
 				<DashboardLayout>
-					<div className="grid grid-cols-3 h-full">
+					<div className="grid grid-cols-3">
 						<div className="bg-gray-900 overflow-y-auto divide-y divide-gray-800">
 							{urls?.getUserUrls?.map((url) => (
-								<div onClick={() => setSelectedUrl(url)} key={url.id}>
-									<div className="px-8 py-5 cursor-pointer hover:bg-gray-800">
+								<div
+									onClick={() => {
+										setSelectedUrl(url);
+									}}
+									key={url.id}
+								>
+									<div
+										className={`px-8 py-5 cursor-pointer ${
+											url === selectedUrl ? 'bg-gray-800' : ''
+										}`}
+									>
 										<div className="text-sm mb-2 text-gray-400">
 											{returnDate(url.createdAt)}
 										</div>
