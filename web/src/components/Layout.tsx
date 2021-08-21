@@ -3,7 +3,7 @@ import Navbar from './Navbar';
 
 const Layout: React.FC<{}> = ({ children }) => {
 	return (
-		<div>
+		<div className="h-screen">
 			<Navbar />
 			{children}
 		</div>

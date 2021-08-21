@@ -13,10 +13,10 @@ const Navbar: React.FC<{}> = ({}) => {
 	if (!data?.me) {
 		navLinks = (
 			<>
-				<div className="hover:text-blue-500">
+				<div className="hover:underline">
 					<Link href="/login">Login</Link>
 				</div>
-				<div className="hover:text-blue-500">
+				<div className="bg-blue-500 py-2 px-4 rounded hover:bg-blue-600 cursor:pointer">
 					<Link href="/signup">Sign Up</Link>
 				</div>
 			</>
@@ -43,12 +43,14 @@ const Navbar: React.FC<{}> = ({}) => {
 	}
 
 	return (
-		<div className="flex px-10 py-4 text-white border-b-2 border-gray-800 bg-gray-900 z-50">
+		<div className="flex px-10 py-4 text-white border-b-2 border-gray-800 bg-gray-900 z-50 items-center">
 			<div className="text-2xl font-bold">
 				<Link href="/">TinyUrl</Link>
 			</div>
 			<div className="ml-auto">
-				<div className="flex text-lg gap-5">{navLinks}</div>
+				<div className="flex text-lg font-medium gap-5 items-center">
+					{navLinks}
+				</div>
 			</div>
 		</div>
 	);
