@@ -5,5 +5,9 @@ mutation login($usernameOrEmail: String!, $password: String!) {
 			username
 			email
 		}
+		errors{
+			field
+			message
+		}
 	}
 }

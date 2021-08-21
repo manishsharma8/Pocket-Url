@@ -220,7 +220,10 @@ export type LoginMutation = (
     & { user?: Maybe<(
       { __typename?: 'User' }
       & Pick<User, 'id' | 'username' | 'email'>
-    )> }
+    )>, errors?: Maybe<Array<(
+      { __typename?: 'FieldError' }
+      & Pick<FieldError, 'field' | 'message'>
+    )>> }
   ) }
 );
 
@@ -244,7 +247,10 @@ export type SignupMutation = (
     & { user?: Maybe<(
       { __typename?: 'User' }
       & Pick<User, 'id' | 'username' | 'email'>
-    )> }
+    )>, errors?: Maybe<Array<(
+      { __typename?: 'FieldError' }
+      & Pick<FieldError, 'field' | 'message'>
+    )>> }
   ) }
 );
 
@@ -383,6 +389,10 @@ export const LoginDocument = gql`
       username
       email
     }
+    errors {
+      field
+      message
+    }
   }
 }
     `;
@@ -406,6 +416,10 @@ export const SignupDocument = gql`
       id
       username
       email
+    }
+    errors {
+      field
+      message
     }
   }
 }

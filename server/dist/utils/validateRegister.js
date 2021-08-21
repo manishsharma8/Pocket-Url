@@ -10,11 +10,11 @@ const validateRegister = (options) => {
             },
         ];
     }
-    if (options.password.length < 2) {
+    if (options.username.includes('@')) {
         return [
             {
-                field: 'password',
-                message: 'Password length must be at least 3 characters',
+                field: 'username',
+                message: 'Username cannot consist an @',
             },
         ];
     }
@@ -26,11 +26,11 @@ const validateRegister = (options) => {
             },
         ];
     }
-    if (options.username.includes('@')) {
+    if (options.password.length < 2) {
         return [
             {
-                field: 'username',
-                message: 'Username cannot consist an @',
+                field: 'password',
+                message: 'Password length must be at least 3 characters',
             },
         ];
     }

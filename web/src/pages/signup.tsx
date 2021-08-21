@@ -1,10 +1,13 @@
 import { Formik, Form, Field } from 'formik';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import React from 'react';
 import Layout from '../components/Layout';
 import { useSignupMutation } from '../generated/graphql';
+import { toErrorMap } from '../utils/toErrorMap';
 
 const SignUp: React.FC<{}> = ({}) => {
+	const router = useRouter();
 	const [, signup] = useSignupMutation();
 
 	return (
@@ -22,9 +25,15 @@ const SignUp: React.FC<{}> = ({}) => {
 					</div>
 					<Formik
 						initialValues={{ username: '', email: '', password: '' }}
-						onSubmit={async (values, actions) => {
+						onSubmit={async (values, { setErrors }) => {
 							const response = await signup({ options: values });
-							console.log('response', response.data?.signup.user);
+							if (response.data?.signup.errors) {
+								const errorMap = toErrorMap(response.data.signup.errors);
+								setErrors(errorMap);
+							} else if (response.data?.signup.user) {
+								await router.push('/');
+								router.reload();
+							}
 						}}
 					>
 						{({ errors, touched }) => (
@@ -37,16 +46,16 @@ const SignUp: React.FC<{}> = ({}) => {
 									<span className="ml-1 text-red-400">*</span>
 								</label>
 								<Field
-									className="mt-2 mb-6 w-full px-3 py-2 outline-none bg-gray-800 rounded text-gray-300"
+									className="mt-2 mb-2 w-full px-3 py-2 outline-none bg-gray-800 rounded text-gray-300"
 									id="username"
 									name="username"
 									autoComplete="off"
 								/>
-								{/* {errors.longUrl && touched.longUrl ? (
-									<div className="text-base text-left text-red-400 ml-2">
-										{errors.longUrl}
+								{errors.username && touched.username ? (
+									<div className="text-base text-left text-red-400 ml-2 mb-4">
+										{errors.username}
 									</div>
-								) : null} */}
+								) : null}
 
 								<label
 									className="text-left p-2 text-gray-300 text-base"
@@ -56,12 +65,16 @@ const SignUp: React.FC<{}> = ({}) => {
 									<span className="ml-1 text-red-400">*</span>
 								</label>
 								<Field
-									className="mt-2 mb-6 w-full px-3 py-2 outline-none bg-gray-800 rounded text-gray-300"
+									className="mt-2 mb-2 w-full px-3 py-2 outline-none bg-gray-800 rounded text-gray-300"
 									id="email"
 									name="email"
 									autoComplete="off"
 								/>
-
+								{errors.email && touched.email ? (
+									<div className="text-base text-left text-red-400 ml-2 mb-4">
+										{errors.email}
+									</div>
+								) : null}
 								<label
 									className="text-left p-2 text-gray-300 text-base"
 									htmlFor="password"
@@ -70,11 +83,16 @@ const SignUp: React.FC<{}> = ({}) => {
 									<span className="ml-1 text-red-400">*</span>
 								</label>
 								<Field
-									className="mt-2 w-full px-3 py-2 outline-none bg-gray-800 rounded text-gray-300"
+									className="mt-2 mb-2 w-full px-3 py-2 outline-none bg-gray-800 rounded text-gray-300"
 									id="password"
 									name="password"
 									autoComplete="off"
 								/>
+								{errors.password && touched.password ? (
+									<div className="text-base text-left text-red-400 ml-2 mb-4">
+										{errors.password}
+									</div>
+								) : null}
 								<button
 									className="block mx-auto mt-16 mb-6 bg-blue-500 text-white w-full py-2 rounded"
 									type="submit"

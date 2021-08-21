@@ -4,6 +4,7 @@ import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import Layout from '../components/Layout';
 import { useLoginMutation } from '../generated/graphql';
+import { toErrorMap } from '../utils/toErrorMap';
 
 const Login: React.FC<{}> = ({}) => {
 	const router = useRouter();
@@ -23,10 +24,15 @@ const Login: React.FC<{}> = ({}) => {
 					</div>
 					<Formik
 						initialValues={{ usernameOrEmail: '', password: '' }}
-						onSubmit={async (values, actions) => {
-							await login(values);
-							await router.push('/');
-							router.reload();
+						onSubmit={async (values, { setErrors }) => {
+							const response = await login(values);
+							if (response.data?.login.errors) {
+								const errorMap = toErrorMap(response.data.login.errors);
+								setErrors(errorMap);
+							} else if (response.data?.login.user) {
+								await router.push('/');
+								router.reload();
+							}
 						}}
 					>
 						{({ errors, touched }) => (
@@ -35,23 +41,23 @@ const Login: React.FC<{}> = ({}) => {
 									className="text-left p-2 text-gray-300 text-base"
 									htmlFor="usernameOrEmail"
 								>
-									Email Address or Username
+									Username or Email Address
 									<span className="ml-1 text-red-400">*</span>
 								</label>
 								<Field
-									className="mt-2 mb-6 w-full px-3 py-2 outline-none bg-gray-800 rounded text-gray-300"
+									className="mt-2 mb-2 w-full px-3 py-2 outline-none bg-gray-800 rounded text-gray-300"
 									id="usernameOrEmail"
 									name="usernameOrEmail"
 									autoComplete="off"
 								/>
-								{/* {errors.longUrl && touched.longUrl ? (
-									<div className="text-base text-left text-red-400 ml-2">
-										{errors.longUrl}
+								{errors.usernameOrEmail && touched.usernameOrEmail ? (
+									<div className="text-base text-left text-red-400 ml-2 mb-4">
+										{errors.usernameOrEmail}
 									</div>
-								) : null} */}
+								) : null}
 
 								<label
-									className="text-left p-2 text-gray-300 text-base"
+									className="text-left mt-8 p-2 text-gray-300 text-base"
 									htmlFor="password"
 								>
 									Password
@@ -63,6 +69,11 @@ const Login: React.FC<{}> = ({}) => {
 									name="password"
 									autoComplete="off"
 								/>
+								{errors.password && touched.password ? (
+									<div className="text-base text-left text-red-400 ml-2 mb-4">
+										{errors.password}
+									</div>
+								) : null}
 								<div className="float-right mt-2 text-base hover:underline">
 									<Link href="/forgot-password">Forgot Password?</Link>
 								</div>
