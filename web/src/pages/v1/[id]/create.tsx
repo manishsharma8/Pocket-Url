@@ -12,11 +12,13 @@ import ActionButton from '../../../components/Dashboard/ActionButton';
 
 const UrlSchema = Yup.object().shape({
 	longUrl: Yup.string().url('Invalid Url').required('Required'),
+	title: Yup.string().required('Required'),
 });
 
 const CreateUrl: React.FC<{}> = ({}) => {
 	const router = useRouter();
 	const [dwarfUrl, setDwarfUrl] = useState<string | null>(null);
+	const [urlId, setUrlId] = useState<number>();
 	const [, createUrl] = useCreateShorterUrlMutation();
 	const [{ data, fetching }] = useMeQuery();
 
@@ -47,7 +49,7 @@ const CreateUrl: React.FC<{}> = ({}) => {
 					name="dwarfUrl"
 					value={dwarfUrl}
 				/>
-				<ActionButton dwarfUrl={dwarfUrl} />
+				<ActionButton id={urlId as number} dwarfUrl={dwarfUrl} />
 			</div>
 		);
 	} else {
@@ -86,7 +88,7 @@ const CreateUrl: React.FC<{}> = ({}) => {
 								Amet qui eiusmod veniam non veniam et.
 							</div>
 							<Formik
-								initialValues={{ longUrl: '', alias: null, title: null }}
+								initialValues={{ longUrl: '', alias: undefined, title: '' }}
 								validationSchema={UrlSchema}
 								onSubmit={async (values) => {
 									const response = await createUrl({
@@ -94,7 +96,8 @@ const CreateUrl: React.FC<{}> = ({}) => {
 										shortUrl: values.alias,
 										title: values.title,
 									});
-									if (response.data?.createShorterUrl.shortUrl) {
+									if (response.data?.createShorterUrl) {
+										setUrlId(response.data.createShorterUrl.id);
 										setDwarfUrl(
 											`http://localhost:3000/${response.data?.createShorterUrl.shortUrl}`
 										);
@@ -135,6 +138,11 @@ const CreateUrl: React.FC<{}> = ({}) => {
 											autoComplete="off"
 											placeholder=""
 										/>
+										{errors.title && touched.title ? (
+											<div className="text-base text-left text-red-400 ml-2">
+												{errors.title}
+											</div>
+										) : null}
 
 										<label
 											className="text-left p-2 text-gray-300 text-base inline-block mt-5"

@@ -1,0 +1,11 @@
+mutation editUrl($id: Int!, $title: String!, $shortUrl: String!) {
+	editUrl(id: $id, title: $title, shortUrl: $shortUrl) {
+		id
+		title
+		longUrl
+		shortUrl
+		createdAt
+		updatedAt
+		creatorId
+	}
+}

@@ -27,39 +27,41 @@ const Dashboard: React.FC<{}> = ({}) => {
 		return <div>Loading...</div>;
 	}
 
-	if (data?.me && selectedUrl) {
+	if (data?.me) {
 		return (
 			<div className="h-screen grid">
 				<DashboardLayout>
-					<div className="grid grid-cols-3">
-						<div className="bg-gray-900 overflow-y-auto divide-y divide-gray-800">
-							{urls?.getUserUrls?.map((url) => (
-								<div
-									onClick={() => {
-										setSelectedUrl(url);
-									}}
-									key={url.id}
-								>
+					{selectedUrl ? (
+						<div className="grid grid-cols-7">
+							<div className="col-start-1 col-end-3 bg-gray-900 overflow-y-auto divide-y divide-gray-800">
+								{urls?.getUserUrls?.map((url) => (
 									<div
-										className={`px-8 py-5 cursor-pointer ${
-											url === selectedUrl ? 'bg-gray-800' : ''
-										}`}
+										onClick={() => {
+											setSelectedUrl(url);
+										}}
+										key={url.id}
 									>
-										<div className="text-sm mb-2 text-gray-400">
-											{returnDate(url.createdAt)}
-										</div>
-										<div className="text-2xl">{url.title}</div>
-										<div className="mt-2 text-sm text-blue-400">
-											{`localhost:3000/${url.shortUrl}`}
+										<div
+											className={`px-8 py-5 cursor-pointer ${
+												url === selectedUrl ? 'bg-gray-800' : ''
+											}`}
+										>
+											<div className="text-sm mb-2 text-gray-400">
+												{returnDate(url.createdAt)}
+											</div>
+											<div className="text-2xl">{url.title}</div>
+											<div className="mt-2 text-sm text-blue-400">
+												{`localhost:3000/${url.shortUrl}`}
+											</div>
 										</div>
 									</div>
-								</div>
-							))}
+								))}
+							</div>
+							<div className="col-start-3 col-end-8 overflow-y-auto h-full bg-gray-800">
+								<Analytics url={selectedUrl} userId={data.me.id} />
+							</div>
 						</div>
-						<div className="col-start-2 col-end-4 overflow-y-auto h-full bg-gray-800">
-							<Analytics url={selectedUrl} />
-						</div>
-					</div>
+					) : null}
 				</DashboardLayout>
 			</div>
 		);

@@ -18,7 +18,7 @@ const type_graphql_1 = require("type-graphql");
 const typeorm_1 = require("typeorm");
 let VisitResolver = class VisitResolver {
     async urlVisits(id) {
-        return Visit_1.Visit.find({ where: { urlId: id }, take: 5 });
+        return Visit_1.Visit.find({ where: { urlId: id } });
     }
     async countPlusOne(id) {
         const urlVisits = await Visit_1.Visit.find({ where: { urlId: id } });

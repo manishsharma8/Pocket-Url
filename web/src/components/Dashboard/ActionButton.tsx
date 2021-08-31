@@ -1,8 +1,10 @@
+import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import { useDeleteUrlMutation } from '../../generated/graphql';
 import Toast from '../Toast';
 
 interface ActionButtonProps {
+	userId: string;
 	id: number;
 	dwarfUrl: string;
 	deleteButton?: boolean;
@@ -12,6 +14,7 @@ const ActionButton: React.FC<ActionButtonProps> = ({
 	dwarfUrl,
 	deleteButton,
 	id,
+	userId,
 }) => {
 	const [, deleteUrl] = useDeleteUrlMutation();
 	const [message, setMessage] = useState<string | null>(null);
@@ -70,7 +73,7 @@ const ActionButton: React.FC<ActionButtonProps> = ({
 						d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
 					/>
 				</svg>
-				Edit
+				<Link href={`/v1/${userId}/edit/${id}`}>Edit</Link>
 			</button>
 			<button className="bg-green-500 hover:bg-transparent border-green-500 ease-in transition border-2 px-2 py-2 rounded flex items-center justify-center gap-1">
 				<svg

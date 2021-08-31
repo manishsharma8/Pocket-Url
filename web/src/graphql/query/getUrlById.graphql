@@ -1,0 +1,9 @@
+query getUrlById($id: Int!) {
+	getUrlById(id: $id) {
+		id
+		title
+		longUrl
+		shortUrl
+		creatorId
+	}
+}

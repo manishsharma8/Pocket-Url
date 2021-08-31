@@ -1,6 +1,6 @@
 mutation createShorterUrl(
 	$longUrl: String!
-	$title: String
+	$title: String!
 	$shortUrl: String
 ) {
 	createShorterUrl(longUrl: $longUrl, title: $title, shortUrl: $shortUrl) {

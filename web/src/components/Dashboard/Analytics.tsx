@@ -6,9 +6,10 @@ import { Bar } from 'react-chartjs-2';
 
 interface AnalyticsProps {
 	url: any;
+	userId: string;
 }
 
-const Analytics: React.FC<AnalyticsProps> = ({ url }) => {
+const Analytics: React.FC<AnalyticsProps> = ({ url, userId }) => {
 	const [{ data, fetching }] = useUrlVisitsQuery({ variables: { id: url.id } });
 	const [labels, setLabels] = useState<Array<string>>([]);
 	const [graphData, setGraphData] = useState<Array<number>>([]);
@@ -95,6 +96,7 @@ const Analytics: React.FC<AnalyticsProps> = ({ url }) => {
 						dwarfUrl={`http://localhost:3000/${url.shortUrl}`}
 						deleteButton={true}
 						id={url.id}
+						userId={userId}
 					/>
 				</div>
 			</div>

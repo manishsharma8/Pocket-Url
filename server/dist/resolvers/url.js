@@ -38,6 +38,9 @@ let UrlResolver = class UrlResolver {
     async getUrl(shortUrl) {
         return Url_1.Url.findOne({ where: { shortUrl } });
     }
+    async getUrlById(id) {
+        return Url_1.Url.findOne({ id });
+    }
     async createShorterUrl(longUrl, title, shortUrl, { req }) {
         if (shortUrl) {
             const url = await Url_1.Url.findOne({ where: { shortUrl: shortUrl } });
@@ -55,7 +58,7 @@ let UrlResolver = class UrlResolver {
                 }
             }
             else
-                throw new Error('This alias already exist');
+                throw new Error('This alias already exists!');
         }
         else {
             const _shortUrl = nanoid_1.nanoid(7);
@@ -66,6 +69,20 @@ let UrlResolver = class UrlResolver {
                 title,
             }).save();
         }
+    }
+    async editUrl(id, title, shortUrl) {
+        const url = await Url_1.Url.findOne({ where: { shortUrl } });
+        if (url) {
+            if ((url === null || url === void 0 ? void 0 : url.id) === id) {
+                await Url_1.Url.update({ id }, { title, shortUrl });
+            }
+            else
+                throw new Error('This alias already exists!');
+        }
+        else if (!url) {
+            await Url_1.Url.update({ id }, { title, shortUrl });
+        }
+        return Url_1.Url.findOne(id);
     }
     async deleteUrl(id, { req }) {
         await Url_1.Url.delete({ id, creatorId: req.session.userId });
@@ -93,16 +110,33 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UrlResolver.prototype, "getUrl", null);
 __decorate([
+    type_graphql_1.Query(() => Url_1.Url, { nullable: true }),
+    __param(0, type_graphql_1.Arg('id', () => type_graphql_1.Int)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], UrlResolver.prototype, "getUrlById", null);
+__decorate([
     type_graphql_1.UseMiddleware(isAuth_1.isAuth),
     type_graphql_1.Mutation(() => Url_1.Url),
     __param(0, type_graphql_1.Arg('longUrl')),
-    __param(1, type_graphql_1.Arg('title', { nullable: true })),
+    __param(1, type_graphql_1.Arg('title')),
     __param(2, type_graphql_1.Arg('shortUrl', { nullable: true })),
     __param(3, type_graphql_1.Ctx()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, String, String, Object]),
     __metadata("design:returntype", Promise)
 ], UrlResolver.prototype, "createShorterUrl", null);
+__decorate([
+    type_graphql_1.UseMiddleware(isAuth_1.isAuth),
+    type_graphql_1.Mutation(() => Url_1.Url),
+    __param(0, type_graphql_1.Arg('id', () => type_graphql_1.Int)),
+    __param(1, type_graphql_1.Arg('title')),
+    __param(2, type_graphql_1.Arg('shortUrl')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, String, String]),
+    __metadata("design:returntype", Promise)
+], UrlResolver.prototype, "editUrl", null);
 __decorate([
     type_graphql_1.UseMiddleware(isAuth_1.isAuth),
     type_graphql_1.Mutation(() => Boolean),

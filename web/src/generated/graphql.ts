@@ -23,6 +23,7 @@ export type FieldError = {
 export type Mutation = {
   __typename?: 'Mutation';
   createShorterUrl: Url;
+  editUrl: Url;
   deleteUrl: Scalars['Boolean'];
   signup: UserResponse;
   login: UserResponse;
@@ -36,8 +37,15 @@ export type Mutation = {
 
 export type MutationCreateShorterUrlArgs = {
   shortUrl?: Maybe<Scalars['String']>;
-  title?: Maybe<Scalars['String']>;
+  title: Scalars['String'];
   longUrl: Scalars['String'];
+};
+
+
+export type MutationEditUrlArgs = {
+  shortUrl: Scalars['String'];
+  title: Scalars['String'];
+  id: Scalars['Int'];
 };
 
 
@@ -83,6 +91,7 @@ export type Query = {
   Urls?: Maybe<Array<Url>>;
   getUserUrls?: Maybe<Array<Url>>;
   getUrl?: Maybe<Url>;
+  getUrlById?: Maybe<Url>;
   me?: Maybe<User>;
   allUser?: Maybe<Array<User>>;
   urlVisits: Array<Visit>;
@@ -92,6 +101,11 @@ export type Query = {
 
 export type QueryGetUrlArgs = {
   shortUrl: Scalars['String'];
+};
+
+
+export type QueryGetUrlByIdArgs = {
+  id: Scalars['Int'];
 };
 
 
@@ -174,7 +188,7 @@ export type CountPlusOneMutation = (
 
 export type CreateShorterUrlMutationVariables = Exact<{
   longUrl: Scalars['String'];
-  title?: Maybe<Scalars['String']>;
+  title: Scalars['String'];
   shortUrl?: Maybe<Scalars['String']>;
 }>;
 
@@ -195,6 +209,21 @@ export type DeleteUrlMutationVariables = Exact<{
 export type DeleteUrlMutation = (
   { __typename?: 'Mutation' }
   & Pick<Mutation, 'deleteUrl'>
+);
+
+export type EditUrlMutationVariables = Exact<{
+  id: Scalars['Int'];
+  title: Scalars['String'];
+  shortUrl: Scalars['String'];
+}>;
+
+
+export type EditUrlMutation = (
+  { __typename?: 'Mutation' }
+  & { editUrl: (
+    { __typename?: 'Url' }
+    & Pick<Url, 'id' | 'title' | 'longUrl' | 'shortUrl' | 'createdAt' | 'updatedAt' | 'creatorId'>
+  ) }
 );
 
 export type ForgotPasswordMutationVariables = Exact<{
@@ -264,6 +293,19 @@ export type GetUrlQuery = (
   & { getUrl?: Maybe<(
     { __typename?: 'Url' }
     & Pick<Url, 'id' | 'title' | 'longUrl'>
+  )> }
+);
+
+export type GetUrlByIdQueryVariables = Exact<{
+  id: Scalars['Int'];
+}>;
+
+
+export type GetUrlByIdQuery = (
+  { __typename?: 'Query' }
+  & { getUrlById?: Maybe<(
+    { __typename?: 'Url' }
+    & Pick<Url, 'id' | 'title' | 'longUrl' | 'shortUrl' | 'creatorId'>
   )> }
 );
 
@@ -347,7 +389,7 @@ export function useCountPlusOneMutation() {
   return Urql.useMutation<CountPlusOneMutation, CountPlusOneMutationVariables>(CountPlusOneDocument);
 };
 export const CreateShorterUrlDocument = gql`
-    mutation createShorterUrl($longUrl: String!, $title: String, $shortUrl: String) {
+    mutation createShorterUrl($longUrl: String!, $title: String!, $shortUrl: String) {
   createShorterUrl(longUrl: $longUrl, title: $title, shortUrl: $shortUrl) {
     id
     title
@@ -371,6 +413,23 @@ export const DeleteUrlDocument = gql`
 
 export function useDeleteUrlMutation() {
   return Urql.useMutation<DeleteUrlMutation, DeleteUrlMutationVariables>(DeleteUrlDocument);
+};
+export const EditUrlDocument = gql`
+    mutation editUrl($id: Int!, $title: String!, $shortUrl: String!) {
+  editUrl(id: $id, title: $title, shortUrl: $shortUrl) {
+    id
+    title
+    longUrl
+    shortUrl
+    createdAt
+    updatedAt
+    creatorId
+  }
+}
+    `;
+
+export function useEditUrlMutation() {
+  return Urql.useMutation<EditUrlMutation, EditUrlMutationVariables>(EditUrlDocument);
 };
 export const ForgotPasswordDocument = gql`
     mutation forgotPassword($email: String!) {
@@ -440,6 +499,21 @@ export const GetUrlDocument = gql`
 
 export function useGetUrlQuery(options: Omit<Urql.UseQueryArgs<GetUrlQueryVariables>, 'query'> = {}) {
   return Urql.useQuery<GetUrlQuery>({ query: GetUrlDocument, ...options });
+};
+export const GetUrlByIdDocument = gql`
+    query getUrlById($id: Int!) {
+  getUrlById(id: $id) {
+    id
+    title
+    longUrl
+    shortUrl
+    creatorId
+  }
+}
+    `;
+
+export function useGetUrlByIdQuery(options: Omit<Urql.UseQueryArgs<GetUrlByIdQueryVariables>, 'query'> = {}) {
+  return Urql.useQuery<GetUrlByIdQuery>({ query: GetUrlByIdDocument, ...options });
 };
 export const GetUserUrlsDocument = gql`
     query getUserUrls {

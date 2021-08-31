@@ -6,7 +6,7 @@ import { getConnection } from 'typeorm';
 export class VisitResolver {
 	@Query(() => [Visit])
 	async urlVisits(@Arg('id', () => Int) id: number) {
-		return Visit.find({ where: { urlId: id }, take: 5 });
+		return Visit.find({ where: { urlId: id } }); //take
 	}
 
 	@Mutation(() => Visit)

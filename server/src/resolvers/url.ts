@@ -40,11 +40,16 @@ export class UrlResolver {
 		return Url.findOne({ where: { shortUrl } });
 	}
 
+	@Query(() => Url, { nullable: true })
+	async getUrlById(@Arg('id', () => Int) id: number): Promise<Url | undefined> {
+		return Url.findOne({ id });
+	}
+
 	@UseMiddleware(isAuth)
 	@Mutation(() => Url)
 	async createShorterUrl(
 		@Arg('longUrl') longUrl: string,
-		@Arg('title', { nullable: true }) title: string,
+		@Arg('title') title: string,
 		@Arg('shortUrl', { nullable: true }) shortUrl: string,
 		@Ctx() { req }: MyContext
 	) {
@@ -61,7 +66,7 @@ export class UrlResolver {
 				} catch (err) {
 					return err;
 				}
-			} else throw new Error('This alias already exist');
+			} else throw new Error('This alias already exists!');
 		} else {
 			const _shortUrl = nanoid(7);
 			return Url.create({
@@ -71,6 +76,24 @@ export class UrlResolver {
 				title,
 			}).save();
 		}
+	}
+
+	@UseMiddleware(isAuth)
+	@Mutation(() => Url)
+	async editUrl(
+		@Arg('id', () => Int) id: number,
+		@Arg('title') title: string,
+		@Arg('shortUrl') shortUrl: string
+	) {
+		const url = await Url.findOne({ where: { shortUrl } });
+		if (url) {
+			if (url?.id === id) {
+				await Url.update({ id }, { title, shortUrl });
+			} else throw new Error('This alias already exists!');
+		} else if (!url) {
+			await Url.update({ id }, { title, shortUrl });
+		}
+		return Url.findOne(id);
 	}
 
 	@UseMiddleware(isAuth)
