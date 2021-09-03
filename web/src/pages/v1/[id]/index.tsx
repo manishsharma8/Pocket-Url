@@ -1,3 +1,4 @@
+import { Formik, Form, Field } from 'formik';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import Analytics from '../../../components/Dashboard/Analytics';
@@ -29,7 +30,7 @@ const Dashboard: React.FC<{}> = ({}) => {
 
 	if (data?.me) {
 		return (
-			<div className="h-screen grid">
+			<div className="h-screen">
 				<DashboardLayout>
 					{selectedUrl ? (
 						<div className="grid grid-cols-7">
@@ -61,7 +62,19 @@ const Dashboard: React.FC<{}> = ({}) => {
 								<Analytics url={selectedUrl} userId={data.me.id} />
 							</div>
 						</div>
-					) : null}
+					) : (
+						<div className="text-center mt-32">
+							<div className="text-4xl font-bold">
+								Create Your First Pocket Url
+							</div>
+							<button
+								onClick={() => router.push(`${router.asPath}/create`)}
+								className="bg-purple-500 text-xl px-4 py-3 rounded mt-16"
+							>
+								Create Url
+							</button>
+						</div>
+					)}
 				</DashboardLayout>
 			</div>
 		);

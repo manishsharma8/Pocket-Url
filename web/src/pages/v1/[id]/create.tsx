@@ -49,7 +49,11 @@ const CreateUrl: React.FC<{}> = ({}) => {
 					name="dwarfUrl"
 					value={dwarfUrl}
 				/>
-				<ActionButton id={urlId as number} dwarfUrl={dwarfUrl} />
+				<ActionButton
+					userId={data?.me?.id as string}
+					id={urlId as number}
+					dwarfUrl={dwarfUrl}
+				/>
 			</div>
 		);
 	} else {
