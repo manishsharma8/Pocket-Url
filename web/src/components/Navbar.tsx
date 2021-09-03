@@ -45,7 +45,7 @@ const Navbar: React.FC<{}> = ({}) => {
 	return (
 		<div className="flex px-10 py-4 text-white border-b-2 border-gray-800 bg-gray-900 z-50 items-center">
 			<div className="text-2xl font-bold">
-				<Link href="/">TinyUrl</Link>
+				<Link href="/">PocketUrl</Link>
 			</div>
 			<div className="ml-auto">
 				<div className="flex text-lg font-medium gap-5 items-center">

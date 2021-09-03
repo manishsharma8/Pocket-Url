@@ -41,7 +41,7 @@ const CreateUrl: React.FC<{}> = ({}) => {
 					className="text-left px-3 text-gray-300 text-base"
 					htmlFor="dwarfUrl"
 				>
-					Your Tiny Url
+					Your Pocket Url
 				</label>
 				<Field
 					className="w-full outline-none rounded px-3 py-2 bg-gray-800 text-gray-300"
@@ -95,16 +95,20 @@ const CreateUrl: React.FC<{}> = ({}) => {
 								initialValues={{ longUrl: '', alias: undefined, title: '' }}
 								validationSchema={UrlSchema}
 								onSubmit={async (values) => {
-									const response = await createUrl({
-										longUrl: values.longUrl,
-										shortUrl: values.alias,
-										title: values.title,
-									});
-									if (response.data?.createShorterUrl) {
-										setUrlId(response.data.createShorterUrl.id);
-										setDwarfUrl(
-											`http://localhost:3000/${response.data?.createShorterUrl.shortUrl}`
-										);
+									if (dwarfUrl) {
+										router.push('/');
+									} else {
+										const response = await createUrl({
+											longUrl: values.longUrl,
+											shortUrl: values.alias,
+											title: values.title,
+										});
+										if (response.data?.createShorterUrl) {
+											setUrlId(response.data.createShorterUrl.id);
+											setDwarfUrl(
+												`http://localhost:3000/${response.data?.createShorterUrl.shortUrl}`
+											);
+										}
 									}
 								}}
 							>
