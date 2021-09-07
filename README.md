@@ -4,6 +4,8 @@
 
 Create short urls with custom aliases and easily track your url visits.
 
+![demo](https://raw.githubusercontent.com/manishsharma8/Personal-Website/web/src/public/demo.png)
+
 ## Run on your machine locally
 
 ### UI _(react + nextjs)_:
