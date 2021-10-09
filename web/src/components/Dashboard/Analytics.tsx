@@ -43,14 +43,7 @@ const Analytics: React.FC<AnalyticsProps> = ({ url, userId }) => {
 	};
 
 	const options = {
-		// scales: {
-		// 	x: {
-		// 		type: 'time',
-		// 		time: {
-		// 			unit: 'day',
-		// 		},
-		// 	},
-		// },
+		maintainAspectRatio: false,
 		elements: {
 			bar: {
 				borderWidth: 1,
@@ -69,11 +62,30 @@ const Analytics: React.FC<AnalyticsProps> = ({ url, userId }) => {
 			let newLabelState: Array<string> = [];
 			let newDataState: Array<number> = [];
 			let count: number = 0;
+
+			let curr = new Date();
+			let week: { date: string; count: number }[] = [];
+
+			for (let i = 1; i <= 7; i++) {
+				let temp: any = {};
+				let first = curr.getDate() - curr.getDay() + i;
+				let day = new Date(curr.setDate(first)).toISOString().slice(0, 10);
+				temp.date = day;
+				temp.count = 0;
+				week.push(temp);
+			}
+
 			data.urlVisits.map((visit) => {
-				newLabelState = [...newLabelState, visit.date];
-				newDataState = [...newDataState, visit.count];
-				count += visit.count;
+				let objIndex: number = week.findIndex((obj) => obj.date == visit.date);
+				week[objIndex].count = visit.count;
 			});
+
+			week.map((day) => {
+				newLabelState = [...newLabelState, day.date];
+				newDataState = [...newDataState, day.count];
+				count += day.count;
+			});
+
 			setLabels(newLabelState);
 			setGraphData(newDataState);
 			setVisitCount(count);
@@ -103,10 +115,12 @@ const Analytics: React.FC<AnalyticsProps> = ({ url, userId }) => {
 			<hr className="my-10 border-gray-700 rounded" />
 			<>
 				<div className="text-xl mb-10">
-					Total Clicks: <span className="font-bold">{visitCount}</span>
+					This Week Visits: <span className="font-bold">{visitCount}</span>
 				</div>
 				<div className="w-5/6">
-					{visitCount !== 0 ? <Bar data={chartData} options={options} /> : null}
+					{visitCount ? (
+						<Bar data={chartData} height={200} options={options} />
+					) : null}
 				</div>
 			</>
 		</div>

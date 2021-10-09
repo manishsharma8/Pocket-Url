@@ -18,12 +18,11 @@ const DashboardNav: React.FC<{}> = ({}) => {
 				</div>
 				<div className="ml-auto">
 					<div className="flex text-lg gap-8">
-						<button
-							onClick={() => router.push(`${router.asPath}/create`)}
-							className="bg-purple-500 text-base px-3 py-2 rounded"
-						>
-							Create Url
-						</button>
+						<Link href={`/v1/${data.me.id}/create`} passHref>
+							<button className="bg-purple-500 text-base px-3 py-2 rounded">
+								Create Url
+							</button>
+						</Link>
 
 						<AvatarMenu id={data.me.id} username={data.me.username} />
 					</div>

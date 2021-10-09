@@ -6,7 +6,7 @@ import { useRouter } from 'next/router';
 
 const Navbar: React.FC<{}> = ({}) => {
 	const router = useRouter();
-	const [{ data, fetching }] = useMeQuery({ pause: isServer() });
+	const [{ data }] = useMeQuery({ pause: isServer() });
 	const [, logout] = useLogoutMutation();
 
 	let navLinks;
