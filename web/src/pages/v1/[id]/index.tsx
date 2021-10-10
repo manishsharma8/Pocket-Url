@@ -1,22 +1,24 @@
-import { Formik, Form, Field } from 'formik';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
+
 import Analytics from '../../../components/Dashboard/Analytics';
 import DashboardLayout from '../../../components/Dashboard/DashboardLayout';
-import { useGetUserUrlsQuery, useMeQuery } from '../../../generated/graphql';
+import { useGetUserUrlsQuery } from '../../../generated/graphql';
 import { returnDate } from '../../../utils/timestampToDate';
+import { useCheckUserAuthentication } from '../../../utils/useCheckUserAuthentication';
 
-const Dashboard: React.FC<{}> = ({}) => {
+const Dashboard: React.FC<{}> = () => {
 	const router = useRouter();
-	const [{ data, fetching }] = useMeQuery();
+	const user = useCheckUserAuthentication();
 	const [{ data: urls }] = useGetUserUrlsQuery();
 	const [selectedUrl, setSelectedUrl] = useState<any>();
 
 	useEffect(() => {
-		if (!data?.me && !fetching) {
-			router.push('/');
+		if (user === null) {
+			router.push('/login?redirect=true');
 		}
-	}, [data, router, fetching]);
+	}, [user, router]);
 
 	useEffect(() => {
 		if (urls?.getUserUrls) {
@@ -24,11 +26,7 @@ const Dashboard: React.FC<{}> = ({}) => {
 		}
 	}, [urls]);
 
-	if (fetching) {
-		return <div>Loading...</div>;
-	}
-
-	if (data?.me) {
+	if (user) {
 		return (
 			<div className="h-screen">
 				<DashboardLayout>
@@ -59,7 +57,7 @@ const Dashboard: React.FC<{}> = ({}) => {
 								))}
 							</div>
 							<div className="col-start-3 col-end-8 overflow-y-auto h-full bg-gray-800">
-								<Analytics url={selectedUrl} userId={data.me.id} />
+								<Analytics url={selectedUrl} userId={user.id} />
 							</div>
 						</div>
 					) : (
@@ -67,12 +65,11 @@ const Dashboard: React.FC<{}> = ({}) => {
 							<div className="text-4xl font-bold">
 								Create Your First Pocket Url
 							</div>
-							<button
-								onClick={() => router.push(`${router.asPath}/create`)}
-								className="bg-purple-500 text-xl px-4 py-3 rounded mt-16"
-							>
-								Create Url
-							</button>
+							<Link href={`/v1/${user.id}/create`} passHref>
+								<button className="bg-purple-500 text-xl px-4 py-3 rounded mt-16">
+									Create Url
+								</button>
+							</Link>
 						</div>
 					)}
 				</DashboardLayout>

@@ -9,6 +9,7 @@ import {
 import * as Yup from 'yup';
 import Link from 'next/link';
 import ActionButton from '../../../components/Dashboard/ActionButton';
+import { useCheckUserAuthentication } from '../../../utils/useCheckUserAuthentication';
 
 const UrlSchema = Yup.object().shape({
 	longUrl: Yup.string().url('Invalid Url').required('Required'),
@@ -20,17 +21,13 @@ const CreateUrl: React.FC<{}> = ({}) => {
 	const [dwarfUrl, setDwarfUrl] = useState<string | null>(null);
 	const [urlId, setUrlId] = useState<number>();
 	const [, createUrl] = useCreateShorterUrlMutation();
-	const [{ data, fetching }] = useMeQuery();
+	const user = useCheckUserAuthentication();
 
 	useEffect(() => {
-		if (!data?.me && !fetching) {
-			router.push('/');
+		if (user === null) {
+			router.push('/login?redirect=true');
 		}
-	}, [data, router, fetching]);
-
-	if (fetching) {
-		return <div>Loading...</div>;
-	}
+	}, [user, router]);
 
 	let fieldOnSubmit: any;
 
@@ -50,7 +47,7 @@ const CreateUrl: React.FC<{}> = ({}) => {
 					value={dwarfUrl}
 				/>
 				<ActionButton
-					userId={data?.me?.id as string}
+					userId={user?.id as string}
 					id={urlId as number}
 					dwarfUrl={dwarfUrl}
 				/>
@@ -60,10 +57,10 @@ const CreateUrl: React.FC<{}> = ({}) => {
 		fieldOnSubmit = null;
 	}
 
-	if (data?.me) {
+	if (user) {
 		return (
 			<DashboardLayout>
-				<Link passHref href={`/v1/${data.me.id}`}>
+				<Link passHref href={`/v1/${user.id}`}>
 					<div className="mx-10 my-6 flex text-xl hover:-translate-x-2 ease-in transition transform cursor-pointer">
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
@@ -137,7 +134,7 @@ const CreateUrl: React.FC<{}> = ({}) => {
 											className="text-left p-2 text-gray-300 text-base inline-block mt-5"
 											htmlFor="title"
 										>
-											Title
+											Title<span className="ml-1 text-red-400">*</span>
 										</label>
 										<Field
 											className="w-full px-3 py-2 outline-none bg-gray-800 rounded text-gray-300"

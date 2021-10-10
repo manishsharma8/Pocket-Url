@@ -2,11 +2,17 @@ import React, { useEffect, useState } from 'react';
 import { useUrlVisitsQuery } from '../../generated/graphql';
 import { returnDate } from '../../utils/timestampToDate';
 import ActionButton from './ActionButton';
-import { Bar } from 'react-chartjs-2';
+import BarChart from '../Charts/Bar';
+import { getWeek } from '../../utils/getWeek';
 
 interface AnalyticsProps {
 	url: any;
 	userId: string;
+}
+
+interface WeekProps {
+	date: string;
+	count: number;
 }
 
 const Analytics: React.FC<AnalyticsProps> = ({ url, userId }) => {
@@ -15,69 +21,23 @@ const Analytics: React.FC<AnalyticsProps> = ({ url, userId }) => {
 	const [graphData, setGraphData] = useState<Array<number>>([]);
 	const [visitCount, setVisitCount] = useState<number>(0);
 
-	const chartData = {
-		labels: labels,
-		datasets: [
-			{
-				label: '# of Visits',
-				data: graphData,
-				backgroundColor: [
-					'rgba(255, 99, 132, 0.2)',
-					'rgba(54, 162, 235, 0.2)',
-					'rgba(255, 206, 86, 0.2)',
-					'rgba(75, 192, 192, 0.2)',
-					'rgba(153, 102, 255, 0.2)',
-					'rgba(255, 159, 64, 0.2)',
-				],
-				borderColor: [
-					'rgba(255, 99, 132, 1)',
-					'rgba(54, 162, 235, 1)',
-					'rgba(255, 206, 86, 1)',
-					'rgba(75, 192, 192, 1)',
-					'rgba(153, 102, 255, 1)',
-					'rgba(255, 159, 64, 1)',
-				],
-				borderWidth: 1,
-			},
-		],
-	};
-
-	const options = {
-		maintainAspectRatio: false,
-		elements: {
-			bar: {
-				borderWidth: 1,
-			},
-		},
-		responsive: true,
-		plugins: {
-			legend: {
-				position: 'right',
-			},
-		},
-	};
-
 	useEffect(() => {
 		if (data && !fetching) {
 			let newLabelState: Array<string> = [];
 			let newDataState: Array<number> = [];
 			let count: number = 0;
 
-			let curr = new Date();
-			let week: { date: string; count: number }[] = [];
+			let week: WeekProps[] = [];
 
-			for (let i = 1; i <= 7; i++) {
-				let temp: any = {};
-				let first = curr.getDate() - curr.getDay() + i;
-				let day = new Date(curr.setDate(first)).toISOString().slice(0, 10);
-				temp.date = day;
-				temp.count = 0;
-				week.push(temp);
-			}
+			// getting current week
+			week = getWeek();
 
+			// updating count
 			data.urlVisits.map((visit) => {
 				let objIndex: number = week.findIndex((obj) => obj.date == visit.date);
-				week[objIndex].count = visit.count;
+				if (objIndex > 0) {
+					week[objIndex].count = visit.count;
+				}
 			});
 
 			week.map((day) => {
@@ -118,9 +78,7 @@ const Analytics: React.FC<AnalyticsProps> = ({ url, userId }) => {
 					This Week Visits: <span className="font-bold">{visitCount}</span>
 				</div>
 				<div className="w-5/6">
-					{visitCount ? (
-						<Bar data={chartData} height={200} options={options} />
-					) : null}
+					<BarChart labels={labels} graphData={graphData} />
 				</div>
 			</>
 		</div>

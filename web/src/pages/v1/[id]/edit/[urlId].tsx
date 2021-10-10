@@ -1,17 +1,16 @@
 import { Formik, Form, Field } from 'formik';
-import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import DashboardLayout from '../../../../components/Dashboard/DashboardLayout';
 import {
-	useMeQuery,
 	useEditUrlMutation,
 	useGetUrlByIdQuery,
 } from '../../../../generated/graphql';
+import { useCheckUserAuthentication } from '../../../../utils/useCheckUserAuthentication';
 
 const EditUrl: React.FC<{}> = ({}) => {
 	const router = useRouter();
-	const [{ data, fetching }] = useMeQuery();
+	const user = useCheckUserAuthentication();
 	const [{ data: urlData, fetching: urlFetching }] = useGetUrlByIdQuery({
 		variables: { id: parseInt(router.query.urlId as string) },
 	});
@@ -19,18 +18,19 @@ const EditUrl: React.FC<{}> = ({}) => {
 
 	const [title, setTitle] = useState('');
 	const [alias, setAlias] = useState('');
-	const [aliasError, setAliasError] = useState<string|null>('');
+	const [aliasError, setAliasError] = useState<string | null>('');
 
 	useEffect(() => {
-		if (!data?.me && !fetching) {
-			router.push('/');
-		} else if (
-			data?.me?.id !== urlData?.getUrlById?.creatorId &&
-			!fetching &&
-			!urlFetching
-		) {
-			router.push(`/v1/${data?.me?.id}`);
+		if (user === null) {
+			router.push('/login?redirect=true');
 		}
+		// } else if (
+		// 	data?.me?.id !== urlData?.getUrlById?.creatorId &&
+		// not!fetching &&
+		// not!urlFetching
+		// ) {
+		// 	router.push(`/v1/${data?.me?.id}`);
+		// }
 
 		if (urlData?.getUrlById?.title) {
 			setTitle(urlData.getUrlById.title);
@@ -38,9 +38,9 @@ const EditUrl: React.FC<{}> = ({}) => {
 		if (urlData?.getUrlById?.shortUrl) {
 			setAlias(urlData.getUrlById.shortUrl);
 		}
-	}, [data, router, fetching, urlData, urlFetching]);
+	}, [user, router, urlData, urlFetching]);
 
-	if (data?.me) {
+	if (user) {
 		return (
 			<DashboardLayout>
 				<div className="grid m-10">
@@ -58,11 +58,10 @@ const EditUrl: React.FC<{}> = ({}) => {
 										shortUrl: alias,
 									});
 									if (response.data?.editUrl) {
-										router.push(`/v1/${data?.me?.id}`);
+										router.push(`/v1/${user.id}`);
 									} else if (response.error?.message.includes('alias')) {
 										setAliasError('This alias already exists');
 									}
-									console.log(response);
 								}}
 							>
 								{({ touched, isSubmitting }) => (
