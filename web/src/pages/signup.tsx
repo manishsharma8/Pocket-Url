@@ -1,7 +1,8 @@
-import { Formik, Form, Field } from 'formik';
+import { Form, Formik } from 'formik';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React from 'react';
+import InputField from '../components/InputField';
 import Layout from '../components/Layout';
 import { useSignupMutation } from '../generated/graphql';
 import { toErrorMap } from '../utils/toErrorMap';
@@ -12,7 +13,7 @@ const SignUp: React.FC<{}> = ({}) => {
 
 	return (
 		<Layout>
-			<div className="flex h-screen justify-center items-center text-white">
+			<div className="flex my-12 justify-center items-center text-white">
 				<div className="w-2/5 border-2 border-gray-800 p-10 rounded">
 					<div className="text-3xl mt-10 mb-3 text-center font-bold">
 						Create an Account Now!
@@ -26,6 +27,7 @@ const SignUp: React.FC<{}> = ({}) => {
 					<Formik
 						initialValues={{ username: '', email: '', password: '' }}
 						onSubmit={async (values, { setErrors }) => {
+							console.log(values);
 							const response = await signup({ options: values });
 							if (response.data?.signup.errors) {
 								const errorMap = toErrorMap(response.data.signup.errors);
@@ -38,61 +40,27 @@ const SignUp: React.FC<{}> = ({}) => {
 					>
 						{({ errors, touched }) => (
 							<Form className="text-xl">
-								<label
-									className="text-left p-2 text-gray-300 text-base"
-									htmlFor="username"
-								>
-									Username
-									<span className="ml-1 text-red-400">*</span>
-								</label>
-								<Field
-									className="mt-2 mb-2 w-full px-3 py-2 outline-none bg-gray-800 rounded text-gray-300"
-									id="username"
-									name="username"
-									autoComplete="off"
+								<InputField
+									field="username"
+									label="Username"
+									errors={errors.username}
+									touched={touched.username}
+									required
 								/>
-								{errors.username && touched.username ? (
-									<div className="text-base text-left text-red-400 ml-2 mb-4">
-										{errors.username}
-									</div>
-								) : null}
-
-								<label
-									className="text-left p-2 text-gray-300 text-base"
-									htmlFor="email"
-								>
-									Email Address
-									<span className="ml-1 text-red-400">*</span>
-								</label>
-								<Field
-									className="mt-2 mb-2 w-full px-3 py-2 outline-none bg-gray-800 rounded text-gray-300"
-									id="email"
-									name="email"
-									autoComplete="off"
+								<InputField
+									field="email"
+									label="Email Address"
+									errors={errors.email}
+									touched={touched.email}
+									required
 								/>
-								{errors.email && touched.email ? (
-									<div className="text-base text-left text-red-400 ml-2 mb-4">
-										{errors.email}
-									</div>
-								) : null}
-								<label
-									className="text-left p-2 text-gray-300 text-base"
-									htmlFor="password"
-								>
-									Password
-									<span className="ml-1 text-red-400">*</span>
-								</label>
-								<Field
-									className="mt-2 mb-2 w-full px-3 py-2 outline-none bg-gray-800 rounded text-gray-300"
-									id="password"
-									name="password"
-									autoComplete="off"
+								<InputField
+									field="password"
+									label="Password"
+									errors={errors.password}
+									touched={touched.password}
+									required
 								/>
-								{errors.password && touched.password ? (
-									<div className="text-base text-left text-red-400 ml-2 mb-4">
-										{errors.password}
-									</div>
-								) : null}
 								<button
 									className="block mx-auto mt-16 mb-6 bg-blue-500 text-white w-full py-2 rounded"
 									type="submit"

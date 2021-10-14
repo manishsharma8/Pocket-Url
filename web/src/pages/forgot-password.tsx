@@ -7,7 +7,6 @@ import MailConfirmation from '../components/MailConfirmation';
 import { useForgotPasswordMutation } from '../generated/graphql';
 
 const ForgotPassword: React.FC<{}> = ({}) => {
-	const router = useRouter();
 	const [complete, setComplete] = useState<boolean>(false);
 	const [, forgotPassword] = useForgotPasswordMutation();
 	return (
@@ -31,7 +30,7 @@ const ForgotPassword: React.FC<{}> = ({}) => {
 								setComplete(true);
 							}}
 						>
-							{({ errors, touched, isSubmitting }) => (
+							{({ isSubmitting }) => (
 								<Form className="text-xl">
 									<label
 										className="text-left p-2 text-gray-300 text-base"

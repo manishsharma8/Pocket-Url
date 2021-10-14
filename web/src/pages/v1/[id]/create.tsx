@@ -2,14 +2,12 @@ import { Field, Formik, Form } from 'formik';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import DashboardLayout from '../../../components/Dashboard/DashboardLayout';
-import {
-	useCreateShorterUrlMutation,
-	useMeQuery,
-} from '../../../generated/graphql';
+import { useCreateShorterUrlMutation } from '../../../generated/graphql';
 import * as Yup from 'yup';
 import Link from 'next/link';
 import ActionButton from '../../../components/Dashboard/ActionButton';
 import { useCheckUserAuthentication } from '../../../utils/useCheckUserAuthentication';
+import InputField from '../../../components/InputField';
 
 const UrlSchema = Yup.object().shape({
 	longUrl: Yup.string().url('Invalid Url').required('Required'),
@@ -111,44 +109,20 @@ const CreateUrl: React.FC<{}> = ({}) => {
 							>
 								{({ errors, touched }) => (
 									<Form className="text-xl">
-										<label
-											className="text-left p-2 text-gray-300 text-base"
-											htmlFor="longUrl"
-										>
-											Your Long Url<span className="ml-1 text-red-400">*</span>
-										</label>
-										<Field
-											className="w-full px-3 py-2 outline-none bg-gray-800 rounded text-gray-300"
-											id="longUrl"
-											name="longUrl"
-											autoComplete="off"
-											placeholder="Paste you link here!"
+										<InputField
+											field="longUrl"
+											label="Your Long Url"
+											errors={errors.longUrl}
+											touched={touched.longUrl}
+											required
 										/>
-										{errors.longUrl && touched.longUrl ? (
-											<div className="text-base text-left text-red-400 ml-2">
-												{errors.longUrl}
-											</div>
-										) : null}
-
-										<label
-											className="text-left p-2 text-gray-300 text-base inline-block mt-5"
-											htmlFor="title"
-										>
-											Title<span className="ml-1 text-red-400">*</span>
-										</label>
-										<Field
-											className="w-full px-3 py-2 outline-none bg-gray-800 rounded text-gray-300"
-											id="title"
-											name="title"
-											autoComplete="off"
-											placeholder=""
+										<InputField
+											field="title"
+											label="Title"
+											errors={errors.title}
+											touched={touched.title}
+											required
 										/>
-										{errors.title && touched.title ? (
-											<div className="text-base text-left text-red-400 ml-2">
-												{errors.title}
-											</div>
-										) : null}
-
 										<label
 											className="text-left p-2 text-gray-300 text-base inline-block mt-5"
 											htmlFor="alias"
@@ -167,7 +141,6 @@ const CreateUrl: React.FC<{}> = ({}) => {
 												placeholder="alias"
 											/>
 										</div>
-
 										{fieldOnSubmit}
 										<button
 											className="block mx-auto mt-12 mb-7 bg-blue-500 text-white w-full py-2 rounded"
